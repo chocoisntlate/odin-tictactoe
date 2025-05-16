@@ -144,7 +144,7 @@ const gameLogic = (function () {
             }
         }
         // Right to left diagonals
-        for (let j = 3; j >= 0; j--) {
+        for (let j = 2; j >= 0; j--) {
             let count = 0;
             let i = 0;
             let currentPlayerMarker = gameBoard.getCellMarker(i, j)
@@ -169,5 +169,9 @@ const gameLogic = (function () {
         return "0";
     }
 
-    return { checkRow, checkColumn}
+    return { checkRow, checkColumn, checkDiagonal}
 })()
+
+gameBoard.setCell(0,2,1)
+gameBoard.setCell(1,1,1)
+gameBoard.setCell(2,0,1)
