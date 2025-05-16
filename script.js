@@ -24,6 +24,10 @@ const gameBoard = (function () {
         }
     }
 
+    const getCellMarker = (row, column) => {
+        return gameBoardArray[row][column].getMarker();
+    }
+
     const resetBoard = () => {
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j<3; j++) {
@@ -65,3 +69,56 @@ function createCell(inputMarker) {
 
     return { getMarker, setCircle, setCross, setEmpty };
 }
+
+const gameLogic = (function () {
+    const checkRow = () => {
+        for (let i = 0; i < 3; i++) {
+            let currentPlayerMarker = gameBoard.getCellMarker(i, 0)
+            let j = 1;
+            let count = 0;
+
+            while (j < 3 && count != 2) {
+                if (currentPlayerMarker === gameBoard.getCellMarker(i,j)) {
+                  count += 1;
+
+                } else {
+                    count = 0;
+                }
+                currentPlayerMarker = gameBoard.getCellMarker(i,j)
+                j += 1;
+            }
+
+            if (count === 2) {
+                return gameBoard.getCellMarker(i,j)
+            } else {
+                return "0";
+            }
+
+        }
+    }
+
+    const checkColumn = () => {
+        for (let i = 0; i < 3; i++) {
+            let currentPlayerMarker = gameBoard.getCellMarker(0, i)
+            let j = 1;
+            let count = 0;
+
+            while (j < 3 && count != 2) {
+                if (currentPlayerMarker === gameBoard.getCellMarker(j, i)) {
+                  count += 1;
+
+                } else {
+                    count = 0;
+                }
+                currentPlayerMarker = gameBoard.getCellMarker(j, i)
+                j += 1;
+            }
+
+            if (count === 2) {
+                return gameBoard.getCellMarker(j, i)
+            } else {
+                return "0";
+            }
+        }
+    }
+})()
