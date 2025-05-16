@@ -46,7 +46,7 @@ const gameBoard = (function () {
         }
     }
     
-    return {setCell, resetBoard, printBoard};
+    return {setCell, resetBoard, printBoard, getCellMarker};
 })()
 
 function createCell(inputMarker) {
@@ -78,7 +78,7 @@ const gameLogic = (function () {
             let count = 0;
 
             while (j < 3 && count != 2) {
-                if (currentPlayerMarker === gameBoard.getCellMarker(i,j)) {
+                if (currentPlayerMarker === gameBoard.getCellMarker(i,j) && currentPlayerMarker != 0) {
                   count += 1;
 
                 } else {
@@ -89,12 +89,10 @@ const gameLogic = (function () {
             }
 
             if (count === 2) {
-                return gameBoard.getCellMarker(i,j)
-            } else {
-                return "0";
-            }
-
+                return gameBoard.getCellMarker(i,j-1)
+            } 
         }
+        return "0";
     }
 
     const checkColumn = () => {
@@ -104,7 +102,7 @@ const gameLogic = (function () {
             let count = 0;
 
             while (j < 3 && count != 2) {
-                if (currentPlayerMarker === gameBoard.getCellMarker(j, i)) {
+                if (currentPlayerMarker === gameBoard.getCellMarker(j, i) && currentPlayerMarker != 0) {
                   count += 1;
 
                 } else {
@@ -115,10 +113,11 @@ const gameLogic = (function () {
             }
 
             if (count === 2) {
-                return gameBoard.getCellMarker(j, i)
-            } else {
-                return "0";
-            }
+                return gameBoard.getCellMarker(j-1, i)
+            } 
         }
+        return "0";
     }
+
+    return { checkRow, checkColumn}
 })()
