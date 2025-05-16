@@ -92,7 +92,7 @@ const gameLogic = (function () {
                 return gameBoard.getCellMarker(i,j-1)
             } 
         }
-        return "0";
+        return 0;
     }
 
     const checkColumn = () => {
@@ -116,7 +116,7 @@ const gameLogic = (function () {
                 return gameBoard.getCellMarker(j-1, i)
             } 
         }
-        return "0";
+        return 0;
     }
 
     const checkDiagonal = () => {
@@ -166,70 +166,99 @@ const gameLogic = (function () {
                 }
             }
         }
-        return "0";
+        return 0;
     }
 
     const checkNoMoreMoves = () => {
         const maximumMoves = 3*3;
         if (count === maximumMoves) {
-            return 3;
+            return true;
         }
-        return 0;
+        return false;
     }
 
     const checkEndGame = () => {
-        results = new Array(4)
-        results[0] = checkRow()
-        results[1] = checkColumn()
-        results[2] = checkDiagonal()
-        results[3] = checkNoMoreMoves()
-        
-        return Math.max.apply(null, results);
+        results = new Array(3)
+        results[0] = parseInt(checkRow())
+        results[1] = parseInt(checkColumn())
+        results[2] = parseInt(checkDiagonal())
+        return Math.max(...results);
     }
 
-    return {checkEndGame}
+    return {checkEndGame, checkNoMoreMoves}
 })()
 
-let play = true;
+const display = (function () {
+
+    const displaySymbol = (cellElement, player) => {
+        cellElement.textContent = ""
+        const imgElem = document.createElement("img");
+        imgElem.setAttribute("class", "cell-icon")
+        if (player === 1) {
+            imgElem.src = "icons/circle-regular.svg"
+        } else {
+            imgElem.src = "icons/xmark-solid.svg"
+        }
+        cellElement.appendChild(imgElem)
+    }
+
+    const resetBoard = () => {
+        for (cell in board.children) {
+            cell.textContent = ""
+        }
+    }
+
+    return {displaySymbol, resetBoard}
+})()
+
 let count = 0;
-gameBoard.printBoard()
-while (play===true) {
-    // someone plays
-    let value;
-    if (count % 2 === 0) {
-        console.log("Player 1's turn")
-        value = 1
-    } else {
-        console.log("Player 2's turn")
-        value = 2
+const board = document.getElementById("board")
+board.addEventListener("click", function(e) {
+    const cellClicked = e.target
+
+    // Ensure click on cell instead of symbol, if symbol can't add there anyway.
+    if (!cellClicked.classList.contains("cell")) {
+        return;
     }
 
-    let inputRow = prompt("Enter row:")
-    let inputColumn = prompt("Enter column:")
 
-    gameBoard.setCell(inputRow, inputColumn, value)
-    count += 1
+    const row = cellClicked.getAttribute("data-row")
+    const col = cellClicked.getAttribute("data-col")
 
-    gameBoard.printBoard()
+    // Ensure clicked on empty cell
+    if (gameBoard.getCellMarker(row, col) === 0) {
 
-    // checking state after play
-    result = gameLogic.checkEndGame()
-    if (result === 3) {
-        // display draw
-        gameBoard.resetBoard()
-        count = 0;
-        play = false
+        // Figuring out who's turn it is
+        if (count % 2 === 0) {
+            console.log("Player 1's turn")
+            value = 1
+        } else {
+            console.log("Player 2's turn")
+            value = 2
+        }
+
+        // Set and Display
+        gameBoard.setCell(row, col, value)
+        display.displaySymbol(cellClicked, value)
+        count += 1
+
+        // Checking for end game scenarios
+        result = gameLogic.checkEndGame()
+        draw = gameLogic.checkNoMoreMoves()
+        if (result === 1 || result === 2) {
+            // display winner
+            alert("The winner is Player " + result)
+            gameBoard.resetBoard()
+            display.resetBoard()
+            count = 0;
+            return;
+        }
+        if (draw) {
+            alert("Draw")
+            gameBoard.resetBoard()
+            display.resetBoard()
+            count = 0;
+            return;
+        }
     }
-    if (result === 1 || result === 2) {
-        // display winner
-        gameBoard.resetBoard()
-        count = 0;
-        // temp
-        play = false;
-    }
-}
-
-
-gameBoard.setCell(0,2,1)
-gameBoard.setCell(1,1,1)
-gameBoard.setCell(2,0,1)
+})
