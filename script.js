@@ -169,8 +169,66 @@ const gameLogic = (function () {
         return "0";
     }
 
-    return { checkRow, checkColumn, checkDiagonal}
+    const checkNoMoreMoves = () => {
+        const maximumMoves = 3*3;
+        if (count === maximumMoves) {
+            return 3;
+        }
+        return 0;
+    }
+
+    const checkEndGame = () => {
+        results = new Array(4)
+        results[0] = checkRow()
+        results[1] = checkColumn()
+        results[2] = checkDiagonal()
+        results[3] = checkNoMoreMoves()
+        
+        return Math.max.apply(null, results);
+    }
+
+    return {checkEndGame}
 })()
+
+let play = true;
+let count = 0;
+gameBoard.printBoard()
+while (play===true) {
+    // someone plays
+    let value;
+    if (count % 2 === 0) {
+        console.log("Player 1's turn")
+        value = 1
+    } else {
+        console.log("Player 2's turn")
+        value = 2
+    }
+
+    let inputRow = prompt("Enter row:")
+    let inputColumn = prompt("Enter column:")
+
+    gameBoard.setCell(inputRow, inputColumn, value)
+    count += 1
+
+    gameBoard.printBoard()
+
+    // checking state after play
+    result = gameLogic.checkEndGame()
+    if (result === 3) {
+        // display draw
+        gameBoard.resetBoard()
+        count = 0;
+        play = false
+    }
+    if (result === 1 || result === 2) {
+        // display winner
+        gameBoard.resetBoard()
+        count = 0;
+        // temp
+        play = false;
+    }
+}
+
 
 gameBoard.setCell(0,2,1)
 gameBoard.setCell(1,1,1)
