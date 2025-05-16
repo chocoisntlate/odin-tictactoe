@@ -119,5 +119,55 @@ const gameLogic = (function () {
         return "0";
     }
 
+    const checkDiagonal = () => {
+        // Left to right diagonals
+        for (let j = 0; j < 3; j++) {
+            let count = 0;
+            let i = 0;
+            let currentPlayerMarker = gameBoard.getCellMarker(i, j)
+            i += 1
+            j += 1
+
+            while (i < 3 && j < 3 && count != 2) {
+                if (currentPlayerMarker === gameBoard.getCellMarker(i, j) && currentPlayerMarker != 0) {
+                  count += 1;
+                } else {
+                    count = 0;
+                }
+                currentPlayerMarker = gameBoard.getCellMarker(i, j)
+                i += 1;
+                j += 1;
+            
+                if (count === 2) {
+                    return gameBoard.getCellMarker(i-1, j-1)
+                }
+            }
+        }
+        // Right to left diagonals
+        for (let j = 3; j >= 0; j--) {
+            let count = 0;
+            let i = 0;
+            let currentPlayerMarker = gameBoard.getCellMarker(i, j)
+            i += 1
+            j -= 1
+
+            while (i < 3 && j >= 0 && count != 2) {
+                if (currentPlayerMarker === gameBoard.getCellMarker(i, j) && currentPlayerMarker != 0) {
+                  count += 1;
+                } else {
+                    count = 0;
+                }
+                currentPlayerMarker = gameBoard.getCellMarker(i, j)
+                i += 1;
+                j -= 1;
+            
+                if (count === 2) {
+                    return gameBoard.getCellMarker(i-1, j+1)
+                }
+            }
+        }
+        return "0";
+    }
+
     return { checkRow, checkColumn}
 })()
