@@ -1,11 +1,11 @@
 #board {
     display: grid;
-    grid-template: repeat(3, 200px) / repeat(3, 200px);
+    grid-template: repeat(3, 175px) / repeat(3, 175px);
     border: 5px solid black;
     background-color:azure;
 }
 
-.display {
+#display {
     font-size: 3em;
     padding: 40px;
 }
@@ -21,6 +21,32 @@
     width: 100px;
 }
 
+.control {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+#play-button {
+    border-radius: 10px;
+    border: 0px;
+    height: 30px;
+    width: 100px;
+    background-color:rgb(220, 236, 218);
+    margin-bottom: 20px;
+}
+
+#play-button:hover {
+    background-color: rgb(154, 169, 152);
+}
 * {
     margin: 0;
     box-sizing: border-box;
@@ -30,4 +56,14 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+#board.hide, .control > .hide, 
+#restart-button.hide {
+    display: none;
+}
+
+
+#restart-button {
+    margin-bottom: 20px;
 }

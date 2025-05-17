@@ -4,7 +4,7 @@ const gameBoard = (function () {
     for (let i = 0; i < 3; i++) {
         gameBoardArray[i] = new Array(3)
         for (let j = 0; j<3; j++) {
-            gameBoardArray[i][j] = createCell(0)
+            gameBoardArray[i][j] = createCell("0")
 
         }
     }
@@ -203,7 +203,7 @@ const display = (function () {
     }
 
     const resetBoard = () => {
-        for (cell in board.children) {
+        for (let cell of board.children) {
             cell.textContent = ""
         }
     }
@@ -212,9 +212,17 @@ const display = (function () {
 })()
 
 let count = 0;
+
 const board = document.getElementById("board")
+const displayElem = document.getElementById("display")
+
 board.addEventListener("click", function(e) {
     const cellClicked = e.target
+
+    // prevent playing after game ends
+    if (board.getAttribute("data-end") === "1") {
+        return
+    }
 
     // Ensure click on cell instead of symbol, if symbol can't add there anyway.
     if (!cellClicked.classList.contains("cell")) {
@@ -226,14 +234,18 @@ board.addEventListener("click", function(e) {
     const col = cellClicked.getAttribute("data-col")
 
     // Ensure clicked on empty cell
-    if (gameBoard.getCellMarker(row, col) === 0) {
+    if (gameBoard.getCellMarker(row, col) === "0") {
 
         // Figuring out who's turn it is
         if (count % 2 === 0) {
-            console.log("Player 1's turn")
+            displayElem.textContent = player2name + "'s Turn" // switching display message
+
+            console.log("Player 1's played")
             value = 1
         } else {
-            console.log("Player 2's turn")
+            displayElem.textContent = player1name + "'s Turn" // switching display message
+
+            console.log("Player 2's played")
             value = 2
         }
 
@@ -247,18 +259,42 @@ board.addEventListener("click", function(e) {
         draw = gameLogic.checkNoMoreMoves()
         if (result === 1 || result === 2) {
             // display winner
-            alert("The winner is Player " + result)
-            gameBoard.resetBoard()
-            display.resetBoard()
-            count = 0;
+            if (result === 1) {
+                displayElem.textContent = player1name + " Won!"
+
+            } else {
+                displayElem.textContent = player2name + " Won!"
+            }
+            board.setAttribute("data-end", "1")
             return;
         }
         if (draw) {
-            alert("Draw")
-            gameBoard.resetBoard()
-            display.resetBoard()
-            count = 0;
+            displayElem.textContent = "Draw"
+            board.setAttribute("data-end", "1")
             return;
         }
     }
+})
+
+const form = document.querySelector("form")
+
+let player1name;
+let player2name;
+form.addEventListener("submit", function(e) {
+    e.preventDefault()
+    player1name = document.getElementById("player1").value
+    player2name = document.getElementById("player2").value
+    form.setAttribute("class", "hide")
+    restartButton.setAttribute("class", "")
+    board.setAttribute("class", "")
+    displayElem.textContent = player1name +"'s Turn"
+})
+
+const restartButton = document.getElementById("restart-button")
+restartButton.addEventListener("click", function(e) {
+    gameBoard.resetBoard()
+    display.resetBoard()
+    count = 0;
+    displayElem.textContent = player1name +"'s Turn"
+    board.setAttribute("data-end", "0")
 })
