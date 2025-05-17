@@ -1,77 +1,79 @@
-const gameBoard = (function () {
-    // Initialising the game board
-    let gameBoardArray = new Array(3);
-    for (let i = 0; i < 3; i++) {
-        gameBoardArray[i] = new Array(3)
-        for (let j = 0; j<3; j++) {
-            gameBoardArray[i][j] = createCell("0")
-
-        }
+class Cell {
+    constructor(inputMarker) {
+        this._marker = inputMarker
     }
 
-    const setCell = (row, column, value) => {
+    setEmpty() {
+        this._marker = "0"
+    }
+
+    setCross() {
+        this._marker = "1"
+    }
+
+    setCircle() {
+        this._marker = "2"
+    }
+
+    get marker() {
+        return this._marker
+    }
+}
+
+const gameBoard = new class {
+    constructor() {
+        this.gameBoardArray = new Array(3);
+        for (let i = 0; i < 3; i++) {
+            this.gameBoardArray[i] = new Array(3)
+            for (let j = 0; j<3; j++) {
+                this.gameBoardArray[i][j] = new Cell("0")
+            }
+        }
+    }
+    setCell(row, column, value) {
         switch (value.toString()) {
             case "0":
-                gameBoardArray[row][column].setEmpty();
+                this.gameBoardArray[row][column].setEmpty();
                 break;
             case "1":
-                gameBoardArray[row][column].setCross();
+                this.gameBoardArray[row][column].setCross();
                 break;
 
             case "2":
-                gameBoardArray[row][column].setCircle();
+                this.gameBoardArray[row][column].setCircle();
                 break;
         }
     }
-
-    const getCellMarker = (row, column) => {
-        return gameBoardArray[row][column].getMarker();
+    
+    getCellMarker(row, column) {
+        return this.gameBoardArray[row][column].marker;
     }
 
-    const resetBoard = () => {
+    resetBoard() {
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j<3; j++) {
-                gameBoardArray[i][j].setEmpty()
+                this.gameBoardArray[i][j].setEmpty()
             }
         }
     }
 
-    const printBoard = () => {
+    printBoard() {
         for (let i = 0; i < 3; i++) {
             let outputString = "";
             for (let j = 0; j<3; j++) {
-                outputString += "[" + gameBoardArray[i][j].getMarker() + "]"
+                outputString += "[" + this.gameBoardArray[i][j].marker + "]"
             }
             console.log(outputString);
         }
     }
     
-    return {setCell, resetBoard, printBoard, getCellMarker};
-})()
-
-function createCell(inputMarker) {
-    let marker = inputMarker;
-
-    const setEmpty = () => {
-        marker = "0";
-    }
-    
-    const setCross = () => {
-        marker = "1";
-    }
-    
-    const setCircle = () => {
-        marker = "2";
-    }
-    const getMarker = () => {
-        return marker
-    };
-
-    return { getMarker, setCircle, setCross, setEmpty };
 }
 
-const gameLogic = (function () {
-    const checkRow = () => {
+const gameLogic = new class{
+    constructor() {
+
+    }
+    checkRow() {
         for (let i = 0; i < 3; i++) {
             let currentPlayerMarker = gameBoard.getCellMarker(i, 0)
             let j = 1;
@@ -95,7 +97,7 @@ const gameLogic = (function () {
         return 0;
     }
 
-    const checkColumn = () => {
+    checkColumn() {
         for (let i = 0; i < 3; i++) {
             let currentPlayerMarker = gameBoard.getCellMarker(0, i)
             let j = 1;
@@ -118,8 +120,7 @@ const gameLogic = (function () {
         }
         return 0;
     }
-
-    const checkDiagonal = () => {
+    checkDiagonal() {
         // Left to right diagonals
         for (let j = 0; j < 3; j++) {
             let count = 0;
@@ -168,8 +169,7 @@ const gameLogic = (function () {
         }
         return 0;
     }
-
-    const checkNoMoreMoves = () => {
+    checkNoMoreMoves () {
         const maximumMoves = 3*3;
         if (count === maximumMoves) {
             return true;
@@ -177,20 +177,18 @@ const gameLogic = (function () {
         return false;
     }
 
-    const checkEndGame = () => {
-        results = new Array(3)
-        results[0] = parseInt(checkRow())
-        results[1] = parseInt(checkColumn())
-        results[2] = parseInt(checkDiagonal())
+    checkEndGame() {
+        let results = new Array(3)
+        results[0] = parseInt(this.checkRow())
+        results[1] = parseInt(this.checkColumn())
+        results[2] = parseInt(this.checkDiagonal())
         return Math.max(...results);
     }
+}
 
-    return {checkEndGame, checkNoMoreMoves}
-})()
+const display = new class{
 
-const display = (function () {
-
-    const displaySymbol = (cellElement, player) => {
+    displaySymbol(cellElement, player) {
         cellElement.textContent = ""
         const imgElem = document.createElement("img");
         imgElem.setAttribute("class", "cell-icon")
@@ -201,15 +199,12 @@ const display = (function () {
         }
         cellElement.appendChild(imgElem)
     }
-
-    const resetBoard = () => {
+    resetBoard() {
         for (let cell of board.children) {
             cell.textContent = ""
         }
     }
-
-    return {displaySymbol, resetBoard}
-})()
+}
 
 let count = 0;
 
@@ -281,6 +276,7 @@ const form = document.querySelector("form")
 let player1name;
 let player2name;
 form.addEventListener("submit", function(e) {
+    console.log("test")
     e.preventDefault()
     player1name = document.getElementById("player1").value
     player2name = document.getElementById("player2").value
